@@ -1,0 +1,4 @@
+# all service specfic routes in app.routes
+
+->         /movie-ticket-reservation-system                          app.Routes
+
