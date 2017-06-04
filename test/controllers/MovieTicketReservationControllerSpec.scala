@@ -20,10 +20,6 @@ class MovieTicketReservationControllerSpec extends PlaySpec with OneServerPerSui
 
   val mockMovieService = mock[MovieRegistrationAndReservationService]
 
-  object TestMovieTicketReservationController extends MovieTicketReservationController {
-    val movieService: MovieRegistrationAndReservationService = mockMovieService
-  }
-
   override def beforeEach(): Unit = {
     reset(mockMovieService)
   }
@@ -38,31 +34,32 @@ class MovieTicketReservationControllerSpec extends PlaySpec with OneServerPerSui
 
   val invalidJson = Json.parse( """{"anything": "ghekihh"}""")
 
+  val testMovieTicketReservationController = new MovieTicketReservationController(mockMovieService)
+
   "MovieTicketReservationController" should {
 
     "register a movie" when {
       "valid input Json is passed" in {
         when(mockMovieService.saveMovie(Matchers.any())) thenReturn(Future.successful(MovieRegistrationCreated(movieRecord)))
         val fakeRequest = FakeRequest(method = "POST", uri = "", headers = FakeHeaders(Seq("Content-type" -> "application/json")), body = validRegisterMovieJson)
-        val result = TestMovieTicketReservationController.registerMovie.apply(fakeRequest)
+        val result = testMovieTicketReservationController.registerMovie.apply(fakeRequest)
         status(result) must be(OK)
-
       }
     }
 
     "fail to register a movie" when {
       "invalid input Json is passed" in {
+        val testMovieTicketReservationController = new MovieTicketReservationController(mockMovieService)
         val fakeRequest = FakeRequest(method = "POST", uri = "", headers = FakeHeaders(Seq("Content-type" -> "application/json")), body = invalidJson)
-        val result = TestMovieTicketReservationController.registerMovie.apply(fakeRequest)
+        val result = testMovieTicketReservationController.registerMovie.apply(fakeRequest)
         status(result) must be(BAD_REQUEST)
       }
 
       "insertion of record fails in Mongo" in {
-        when(mockMovieService.saveMovie(Matchers.any())) thenReturn(Future.successful(MovieRegistrationCreateError("Error while craeting")))
+        when(mockMovieService.saveMovie(Matchers.any())) thenReturn(Future.successful(MovieRegistrationCreateError("Error message")))
         val fakeRequest = FakeRequest(method = "POST", uri = "", headers = FakeHeaders(Seq("Content-type" -> "application/json")), body = validRegisterMovieJson)
-        val result = TestMovieTicketReservationController.registerMovie.apply(fakeRequest)
+        val result = testMovieTicketReservationController.registerMovie.apply(fakeRequest)
         status(result) must be(INTERNAL_SERVER_ERROR)
-
       }
     }
 
@@ -70,7 +67,7 @@ class MovieTicketReservationControllerSpec extends PlaySpec with OneServerPerSui
       "valid input Json is passed" in {
         when(mockMovieService.modifyBooking(Matchers.any())) thenReturn(Future.successful(seatBookedSuccessMessage))
         val fakeRequest = FakeRequest(method = "POST", uri = "", headers = FakeHeaders(Seq("Content-type" -> "application/json")), body = validReserveSeatJson)
-        val result = TestMovieTicketReservationController.reserveSeat.apply(fakeRequest)
+        val result = testMovieTicketReservationController.reserveSeat.apply(fakeRequest)
         status(result) must be(OK)
       }
     }
@@ -78,7 +75,7 @@ class MovieTicketReservationControllerSpec extends PlaySpec with OneServerPerSui
     "fail to reserve seat" when {
       "invalid input Json is passed" in {
         val fakeRequest = FakeRequest(method = "POST", uri = "", headers = FakeHeaders(Seq("Content-type" -> "application/json")), body = invalidJson)
-        val result = TestMovieTicketReservationController.reserveSeat.apply(fakeRequest)
+        val result = testMovieTicketReservationController.reserveSeat.apply(fakeRequest)
         status(result) must be(BAD_REQUEST)
       }
     }
@@ -86,7 +83,7 @@ class MovieTicketReservationControllerSpec extends PlaySpec with OneServerPerSui
     "show the movie booking info" when {
       "valid imdbid and screen id are passed" in {
         when(mockMovieService.getMovieInfo(Matchers.any(), Matchers.any())) thenReturn(Future.successful(MovieBookingInformationFetched(movieRecord)))
-        val result = TestMovieTicketReservationController.viewMovieBookingInfo("tt0111161", "screen_123456").apply(FakeRequest())
+        val result = testMovieTicketReservationController.viewMovieBookingInfo("tt0111161", "screen_123456").apply(FakeRequest())
         status(result) must be(OK)
       }
     }
@@ -94,7 +91,7 @@ class MovieTicketReservationControllerSpec extends PlaySpec with OneServerPerSui
     "fail to show the movie booking info" when {
       "invalid imdbid and screen id are passed" in {
         when(mockMovieService.getMovieInfo(Matchers.any(), Matchers.any())) thenReturn(Future.successful(MovieBookingInformationFetchError))
-        val result = TestMovieTicketReservationController.viewMovieBookingInfo("imdbi1234", "screen1234").apply(FakeRequest())
+        val result = testMovieTicketReservationController.viewMovieBookingInfo("imdbi1234", "screen1234").apply(FakeRequest())
         status(result) must be(NOT_FOUND)
       }
     }

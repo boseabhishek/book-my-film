@@ -2,9 +2,9 @@
 
 # routes to specific services
 
-POST     /register/movie                             controllers.MovieTicketReservationControllerImpl.registerMovie
-POST     /reserve/seat                               controllers.MovieTicketReservationControllerImpl.reserveSeat
-GET      /movie/information/:imdbId/:screenId        controllers.MovieTicketReservationControllerImpl.viewMovieBookingInfo(imdbId: String, screenId: String)
+POST     /register/movie                             controllers.MovieTicketReservationController.registerMovie
+POST     /reserve/seat                               controllers.MovieTicketReservationController.reserveSeat
+GET      /movie/information/:imdbId/:screenId        controllers.MovieTicketReservationController.viewMovieBookingInfo(imdbId: String, screenId: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

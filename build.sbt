@@ -1,4 +1,4 @@
-name := """movie-ticket-reservation-system"""
+name := """book-my-film"""
 
 version := "1.0-SNAPSHOT"
 
@@ -14,4 +14,4 @@ libraryDependencies ++= Seq(
   "de.leanovate.play-mockws" %% "play-mockws" % "2.5.0-RC2" % "test"
 )
 
-coverageExcludedPackages := "<empty>;Reverse.*;app.Routes.*;main.Routes;testOnlyDoNotUseInAppConf.*;forms.*;config.*;models.*;views.html.*;main.*;repositories.*"
+coverageExcludedPackages := "<empty>;Reverse.*;app.Routes.*;main.Routes;testOnlyDoNotUseInAppConf.*;forms.*;config.*;models.*;views.html.*;main.*"

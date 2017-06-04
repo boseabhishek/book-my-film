@@ -12,14 +12,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class MovieTicketReservationControllerImpl @Inject()(movieRegistrationAndReservationService: MovieRegistrationAndReservationService)
-  extends MovieTicketReservationController {
-  val movieService = movieRegistrationAndReservationService
-}
-
-trait MovieTicketReservationController extends Controller {
-
-  val movieService: MovieRegistrationAndReservationService
+class MovieTicketReservationController @Inject()(movieService: MovieRegistrationAndReservationService)
+  extends Controller {
 
   def registerMovie = Action.async(parse.json) { implicit request =>
     request.body.asOpt[MovieRegistrationRequest] match {
