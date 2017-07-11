@@ -14,21 +14,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 sealed trait MovieRegistrationCreate
-
 case class MovieRegistrationCreated(bookMovie: MovieRecord) extends MovieRegistrationCreate
-
 case class MovieRegistrationCreateError(cause: String) extends MovieRegistrationCreate
 
-sealed trait MovieBookingInformationFetch
-
-case class MovieBookingInformationFetched(bookMovie: MovieRecord) extends MovieBookingInformationFetch
-
-case object MovieBookingInformationFetchError extends MovieBookingInformationFetch
+sealed trait MovieBookingInformation
+case class MovieBookingInformationFetched(bookMovie: MovieRecord) extends MovieBookingInformation
+case object MovieBookingInformationFetchError extends MovieBookingInformation
 
 sealed trait MovieBookingUpdateStatus
-
 case class MovieBookingUpdated(bookMovie: MovieRecord) extends MovieBookingUpdateStatus
-
 case object MovieBookingUpdateFailed extends MovieBookingUpdateStatus
 
 @Singleton
@@ -52,7 +46,7 @@ class MovieBookingRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi) e
     }
   }
 
-  def findOne(query: JsObject): Future[MovieBookingInformationFetch] = {
+  def findOne(query: JsObject): Future[MovieBookingInformation] = {
     collection flatMap { coll =>
       coll.find(query).sort(Json.obj("_id" -> -1)).one[MovieRecord] map {
         case Some(m) => MovieBookingInformationFetched(m)

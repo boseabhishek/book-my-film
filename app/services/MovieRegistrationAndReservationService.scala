@@ -2,7 +2,6 @@ package services
 
 import javax.inject._
 
-import com.google.inject.ImplementedBy
 import connectors.IMDBConnector
 import models._
 import play.api.libs.json.{JsObject, Json}
@@ -12,17 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class MovieRegistrationAndReservationServiceImpl @Inject()(movieBookingRepository: MovieBookingRepository, imdbApiConnector: IMDBConnector)
-  extends MovieRegistrationAndReservationService {
-  val movieRepository = movieBookingRepository
-  val imdbConnector = imdbApiConnector
-}
-
-@ImplementedBy(classOf[MovieRegistrationAndReservationServiceImpl])
-trait MovieRegistrationAndReservationService {
-
-  val movieRepository: MovieBookingRepository
-  val imdbConnector: IMDBConnector
+class MovieRegistrationAndReservationService @Inject()(movieRepository: MovieBookingRepository, imdbConnector: IMDBConnector) {
 
   def saveMovie(movieReq: MovieRegistrationRequest): Future[MovieRegistrationCreate] = {
     fetchRecordByImdbAndScreenId(movieReq.imdbId, movieReq.screenId) flatMap {
@@ -54,19 +43,20 @@ trait MovieRegistrationAndReservationService {
     }
   }
 
-  def getMovieInfo(imdbId: String, screenId: String): Future[MovieBookingInformationFetch] =
-    fetchRecordByImdbAndScreenId(imdbId, screenId)
-
-  private def fetchRecordByImdbAndScreenId(imdbId: String, screenId: String) =
-    movieRepository.findOne(createDBQuery(imdbId, screenId))
-
   private def updateSeatReservationByImdbAndScreenId(updateMovieRecord: MovieRecord): Future[MovieBookingUpdateStatus] =
     movieRepository.update(updateMovieRecord, createDBQuery(updateMovieRecord.movie.imdbId, updateMovieRecord.screenId))
+
+  def getMovieInfo(imdbId: String, screenId: String): Future[MovieBookingInformation] =
+    fetchRecordByImdbAndScreenId(imdbId, screenId)
+
+  private def fetchRecordByImdbAndScreenId(imdbId: String, screenId: String): Future[MovieBookingInformation] =
+    movieRepository.findOne(createDBQuery(imdbId, screenId))
 
   private def createDBQuery(firstParam: String, secondParam: String): JsObject = {
     Json.obj(
       "movie.imdbId" -> firstParam,
       "screenId" -> secondParam)
   }
+
 
 }

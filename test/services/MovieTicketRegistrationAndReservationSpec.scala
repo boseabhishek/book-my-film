@@ -18,11 +18,6 @@ class MovieTicketRegistrationAndReservationSpec extends PlaySpec with OneServerP
   val mockMovieRepository = mock[MovieBookingRepository]
   val mockImdbConnector = mock[IMDBConnector]
 
-  object TestMovieRegistrationAndReservationService extends MovieRegistrationAndReservationService {
-    val movieRepository: MovieBookingRepository = mockMovieRepository
-    val imdbConnector: IMDBConnector = mockImdbConnector
-  }
-
   override def beforeEach(): Unit = {
     reset(mockMovieRepository)
     reset(mockImdbConnector)
@@ -38,6 +33,8 @@ class MovieTicketRegistrationAndReservationSpec extends PlaySpec with OneServerP
   val movieRecordNoAvailableSeats = MovieRecord(Movie("tt0111161", "The Shawshank Redemption"), "screen_123456", 0, None)
 
   val updatedMovieRecord = MovieRecord(Movie("tt0111161", "The Shawshank Redemption"), "screen_123456", 99, Some(1))
+
+  val TestMovieRegistrationAndReservationService = new MovieRegistrationAndReservationService(mockMovieRepository, mockImdbConnector)
 
   "MovieRegistrationAndReservationService" should {
 
